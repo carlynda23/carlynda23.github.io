@@ -5,8 +5,7 @@
     <!-- Load jsPsych v7 framework and standard CSS -->
     <script src="https://unpkg.com/jspsych@7.3.3"></script>
     <link href="https://unpkg.com/jspsych@7.3.3/css/jspsych.css" rel="stylesheet" type="text/css" />
-    
-    <!-- Load the required plugins -->
+    <script src="https://unpkg.com/@jspsych-contrib/plugin-pipe"></script>
     <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1"></script>
     <script src="https://unpkg.com/@jspsych/plugin-fullscreen@1.1"></script>
   </head>
@@ -105,6 +104,18 @@
           choices: ['View Raw Data']
         };
         timeline.push(debrief);
+
+        //data collection (DO NOT TOUCH!!!)
+        const subject_id = jsPsych.randomization.randomID(10);
+        const filename = `${subject_id}.csv`;
+        const save_data = {
+          type: jsPsychPipe,
+          action: "save",
+          experiment_id: "EHb4oBeNaMQJ",
+          filename: filename,
+          data_string: ()=>jsPsych.data.get().csv()
+        };
+        timeline.push(save_data);
 
         // (Optional) Exit fullscreen mode at the end
         const exit_fullscreen = {
