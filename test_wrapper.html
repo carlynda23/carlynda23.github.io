@@ -36,6 +36,7 @@
            Generate subject_id and condition
         --------------------------------------------------------- */
         const subject_id = jsPsych.randomization.randomID(10);
+        // each participant has 50% chance in either extrinsic or intrinsic condition, NOT globally counterbalanced
         const condition = jsPsych.randomization.sampleWithoutReplacement(
           ["intrinsic", "extrinsic"], 1
         )[0];
