@@ -24,6 +24,22 @@
           }
         });
 
+        // randomize participant id
+        const subject_id = jsPsych.randomization.randomID(10);
+        const filename = `${subject_id}.csv`;
+
+        // Randomly assign condition when participant starts, THIS IS THE RANDOM ASSIGNMENT (faye)
+        const condition = jsPsych.randomization.sampleWithoutReplacement(
+          ["intrinsic", "extrinsic"], 1
+        )[0];
+
+        // Add condition to all data automatically (faye)
+        jsPsych.data.addProperties({
+          subject_id: subject_id,
+          condition: condition
+        });
+
+        // define timeline
         const timeline = [];
 
         // 2. Fullscreen Trial (Browsers require a user click to enter fullscreen)
@@ -112,9 +128,7 @@
         };
         timeline.push(debrief);
 
-        //data collection (DO NOT TOUCH!!!)
-        const subject_id = jsPsych.randomization.randomID(10);
-        const filename = `${subject_id}.csv`;
+        //data collection OSF Datepipe (DO NOT EDIT!!!) (faye)
         const save_data = {
           type: jsPsychPipe,
           action: "save",
