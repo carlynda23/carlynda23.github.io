@@ -10,3 +10,13 @@ DataPipe → OSF (164 Doodle Experiment - exported data) → csv file for each p
 
 ### Data analysis:
 Merge csv files into one → clean data into an organized dataframe → use R to generate plots → statistical analysis (one-way ANOVA, between-subjects t test)
+
+index.html
+ ├── fullscreen trial
+ ├── instructions trial
+ ├── game trial (iframe)
+ │     └── loads intrinsic.html  ← game lives here
+ │     └── or extrinsic.html
+ ├── debrief
+ ├── save data
+ └── exit fullscreen
