@@ -42,12 +42,10 @@
             <div style="max-width: 600px; margin: auto; padding-bottom: 20px;">
               <h2>Doodle Jump Experiment</h2>
               <p>In the next screen, you will play a clone of the game <strong>Doodle Jump</strong>.</p>
-              <ul style="text-align: left;">
+              <ul style="text-align: center;">
                 <li><strong>Controls:</strong> Use the <strong>Left</strong> and <strong>Right</strong> arrow keys (or A and D) to move.</li>
-                <li>Your total screen time will be tracked. Even if your character falls and the game restarts, your continuous play time is being recorded.</li>
-                <li>Play for as long as you feel like!</li>
-              </ul>
-              <p>When you are completely finished playing, click the <strong>"Finish Experiment"</strong> button located below the game.</p>
+               <p>Play for as long as you feel like!</p>
+              <p>When you are completely finished playing, click the <strong>"Finish Experiment"</strong> button located in the top right.</p>
             </div>
           `,
           choices: ['Start Game']
@@ -58,6 +56,15 @@
         const game_trial = {
           type: jsPsychHtmlButtonResponse,
           stimulus: `
+             <style>
+              #jspsych-html-button-response-btngroup {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                width: auto;
+                z-index: 1000;
+              }
+            </style>
             <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 20px;">
               <p style="margin: 0 0 10px 0; color: #555;">
                 <em>Note: Click inside the game area first if your keyboard controls do not respond.</em>
