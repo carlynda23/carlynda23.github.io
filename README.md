@@ -11,12 +11,32 @@ DataPipe → OSF (164 Doodle Experiment - exported data) → csv file for each p
 ### Data analysis:
 Merge csv files into one → clean data into an organized dataframe → use R to generate plots → statistical analysis (one-way ANOVA, between-subjects t test)
 
+```
 index.html
- ├── fullscreen trial
- ├── instructions trial
- ├── game trial (iframe)
- │     └── loads intrinsic.html  ← game lives here
- │     └── or extrinsic.html
- ├── debrief
- ├── save data
- └── exit fullscreen
+│
+├── 1. Fullscreen Trial
+│      └── Switch participant to fullscreen mode
+│
+├── 2. Instructions Trial
+│      └── Display experiment instructions
+│
+├── 3. Game Trial (iframe embedded in jsPsych)
+│      ├── Randomly assign condition
+│      │
+│      ├── If condition === "intrinsic"
+│      │      └── Load intrinsic.html
+│      │
+│      └── If condition === "extrinsic"
+│             └── Load extrinsic.html
+│
+├── 4. Debrief Trial
+│      └── Display completion message
+│
+├── 5. Save Data (jsPsychPipe → OSF)
+│      ├── Generate subject_id
+│      ├── Attach condition to dataset
+│      └── Upload CSV file to OSF project
+│
+└── 6. Exit Fullscreen
+       └── Return browser to normal view
+```
