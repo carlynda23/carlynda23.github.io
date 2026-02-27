@@ -2,116 +2,165 @@
 <html>
   <head>
     <title>Doodle Jump Experiment</title>
-    
-<!-- Load jsPsych v7 framework and standard CSS -->
+
+    <!-- jsPsych core -->
     <script src="https://unpkg.com/jspsych@7.3.3"></script>
-    <link href="https://unpkg.com/jspsych@7.3.3/css/jspsych.css" rel="stylesheet" type="text/css" />
-    <script src="https://unpkg.com/@jspsych-contrib/plugin-pipe"></script>
+    <link href="https://unpkg.com/jspsych@7.3.3/css/jspsych.css" rel="stylesheet" />
+
+    <!-- Plugins -->
     <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1"></script>
     <script src="https://unpkg.com/@jspsych/plugin-fullscreen@1.1"></script>
+    <script src="https://unpkg.com/@jspsych-contrib/plugin-pipe"></script>
   </head>
+
   <body>
     <script>
-
-// FAILSAFE: Check if the scripts successfully loaded from the internet
-      if (typeof initJsPsych === 'undefined' || typeof jsPsychHtmlButtonResponse === 'undefined' || typeof jsPsychFullscreen === 'undefined') {
-        document.body.innerHTML = '<h2 style="color:red; text-align:center; margin-top:50px;">Error: jsPsych failed to load. Check your internet connection or browser console (F12) for blocked scripts.</h2>';
+      // FAILSAFE: Ensure jsPsych loaded
+      if (typeof initJsPsych === 'undefined') {
+        document.body.innerHTML =
+          '<h2 style="color:red; text-align:center; margin-top:50px;">Error: jsPsych failed to load.</h2>';
       } else {
-        
-        // 1. Initialize jsPsych
+
+        /* ---------------------------------------------------------
+           Initialize jsPsych
+        --------------------------------------------------------- */
         const jsPsych = initJsPsych({
           on_finish: function() {
-            // Display the raw JSON data automatically when the experiment is done
-            jsPsych.data.displayData();
+            jsPsych.data.displayData();   // MUTE THIS LINE IF WE WANT TO HIDE RAW DATA FROM PARTICIPANTS
           }
         });
 
         const timeline = [];
 
-        // 2. Fullscreen Trial (Browsers require a user click to enter fullscreen)
+        /* ---------------------------------------------------------
+           Generate subject_id and condition
+        --------------------------------------------------------- */
+        const subject_id = jsPsych.randomization.randomID(10);
+        // each participant has 50% chance in either extrinsic or intrinsic condition, NOT globally counterbalanced
+        const condition = jsPsych.randomization.sampleWithoutReplacement(
+          ["intrinsic", "extrinsic"], 1
+        )[0];
+
+        console.log(condition)
+
+        jsPsych.data.addProperties({
+          subject_id: subject_id,
+          condition: condition
+        });
+
+        const game_url = condition === "intrinsic"
+          ? "test_intrinsic.html"
+          : "extrinsic.html";
+
+        /* ---------------------------------------------------------
+           Fullscreen
+        --------------------------------------------------------- */
         const enter_fullscreen = {
           type: jsPsychFullscreen,
           fullscreen_mode: true,
-          message: '<p>This experiment will switch to full screen mode when you press the button below.</p>',
-          button_label: 'Continue to Full Screen'
+          message: '<p>This experiment will switch to full screen mode.</p>',
+          button_label: 'Continue'
         };
         timeline.push(enter_fullscreen);
 
-        // 3. Welcome and Instructions Trial
+        /* ---------------------------------------------------------
+           Instructions
+        --------------------------------------------------------- */
         const instructions = {
           type: jsPsychHtmlButtonResponse,
           stimulus: `
-            <div style="max-width: 600px; margin: auto; padding-bottom: 20px;">
+            <div style="max-width: 600px; margin: auto;">
               <h2>Doodle Jump Experiment</h2>
-              <p>In the next screen, you will play a clone of the game <strong>Doodle Jump</strong>.</p>
-              <ul style="text-align: center;">
-                <li><strong>Controls:</strong> Use the <strong>Left</strong> and <strong>Right</strong> arrow keys (or A and D) to move.</li>
-               <p>Play for as long as you feel like!</p>
-              <p>When you are completely finished playing, click the <strong>"Finish Experiment"</strong> button located in the top right.</p>
+              <p>You will now play a clone of <strong>Doodle Jump</strong>.</p>
+              <p><strong>Controls:</strong> Use Left/Right arrow keys (or A/D) to move.</p>
+              <p>Play for as long as you like.</p>
+              <p>When you are completely finished, click the <strong>"Finish Experiment"</strong> button in the top right.</p>
             </div>
           `,
           choices: ['Start Game']
         };
         timeline.push(instructions);
 
-        // 4. Random Assignment
-        const condition = jsPsych.randomization.sampleWithoutReplacement(["intrinsic","extrinsic"], 1)[0];
-        jsPsych.data.addProperties({ condition: condition });
-
-        // 5. Game conditionals
-        const game_url = condition === "intrinsic" ? "intrinsic.html" : "extrinsic.html";
-
+        /* ---------------------------------------------------------
+           Game Trial (iframe)
+        --------------------------------------------------------- */
         const game_trial = {
-        type: jsPsychHtmlButtonResponse,
-        stimulus: `<iframe src="${game_url}" style="width:400px;height:600px;border:2px solid #ccc;"></iframe>`,
-        choices: ["Finish Experiment"],
-        data: { task: "doodle_jump_play" }
-        };
+          type: jsPsychHtmlButtonResponse,
+          stimulus: `
+            <style>
+              #jspsych-html-button-response-btngroup {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                width: auto;
+                z-index: 1000;
+              }
+            </style>
 
+            <div style="display:flex; flex-direction:column; align-items:center; margin-bottom: 20px;">
+              <p style="margin: 0 0 10px 0; color:#555;">
+                <em>Note: Click inside the game area first if your keyboard controls do not respond.</em>
+              </p>
+
+              <iframe 
+                src="${game_url}"
+                id="game-iframe"
+                title="Game"
+                style="width: 400px; height: 600px; border: 2px solid #ccc; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+              </iframe>
+            </div>
+          `,
+          choices: ['Finish Experiment'],
+          data: { task: "game_play" },
+          on_load: function() {
+            const iframe = document.getElementById("game-iframe");
+            if (iframe) iframe.focus();
+          }
+        };
         timeline.push(game_trial);
-        
-        // 6. Debrief Trial (Showing the tracked time)
+
+        /* ---------------------------------------------------------
+           Debrief
+        --------------------------------------------------------- */
         const debrief = {
           type: jsPsychHtmlButtonResponse,
-          stimulus: function() {
-            const game_data = jsPsych.data.get().filter({task: 'doodle_jump_play'}).values()[0];
-            
-            // Convert RT (milliseconds) to seconds
-            const time_seconds = Math.round(game_data.rt / 1000);
-            const time_minutes = (time_seconds / 60).toFixed(2);
-            
-            return `
-              <div style="max-width: 600px; margin: auto; padding-bottom: 20px;">
-                <h2>Experiment Complete</h2>
-                <p>Thank you for participating!</p>
-              </div>
-            `;
-          },
-          choices: ['View Raw Data']
+          stimulus: `
+            <div style="max-width:600px; margin:auto;">
+              <h2>Experiment Complete</h2>
+              <p>Thank you for participating!</p>
+            </div>
+          `,
+          choices: ['Continue']
         };
         timeline.push(debrief);
 
-        //data collection (DO NOT TOUCH!!!)
-        const subject_id = jsPsych.randomization.randomID(10);
+        /* ---------------------------------------------------------
+           Save Data (jsPsychPipe)
+           DO NOT MODIFY experiment_id
+        --------------------------------------------------------- */
         const filename = `${subject_id}.csv`;
+
         const save_data = {
           type: jsPsychPipe,
           action: "save",
           experiment_id: "EHb4oBeNaMQJ",
           filename: filename,
-          data_string: ()=>jsPsych.data.get().csv()
+          data_string: () => jsPsych.data.get().csv()
         };
         timeline.push(save_data);
 
-        // (Optional) Exit fullscreen mode at the end
+        /* ---------------------------------------------------------
+           Exit Fullscreen
+        --------------------------------------------------------- */
         const exit_fullscreen = {
           type: jsPsychFullscreen,
-          fullscreen_mode: false,
-          delay_after: 0
+          fullscreen_mode: false
         };
         timeline.push(exit_fullscreen);
 
-        // 6. Run the experiment
+        /* ---------------------------------------------------------
+           Run Experiment
+        --------------------------------------------------------- */
         jsPsych.run(timeline);
       }
     </script>
