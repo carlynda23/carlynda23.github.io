@@ -145,7 +145,30 @@
           }
         };
         timeline.push(game_trial);
-
+        //4.5 Self Report Score trial (Creates accountability for Extrinsic condition)
+        const report_score = {
+          type: jsPsychHtmlButtonResponse,
+          stimulus: `
+            <div style="max-width: 500px; margin: auto; padding: 20px;">
+              <h2>Game Over</h2>
+              <p>Please enter your highest score from the game below.</p>
+              <input type="number" id="reported-score" placeholder="e.g., 4500" style="font-size: 18px; padding: 10px; width: 80%; margin-bottom: 20px;">
+            </div>
+          `,
+          choices: ['Submit Score'],
+          on_load: function() {
+            // FIX: We must capture the data when the button is clicked, 
+            // otherwise the text box disappears before 'on_finish' runs.
+            document.querySelector('.jspsych-btn').addEventListener('click', function() {
+              window.temp_score_storage = document.getElementById('reported-score').value;
+            });
+          },
+          on_finish: function(data) {
+            // Save the captured value into the official data
+            data.self_reported_score = window.temp_score_storage || "0";
+          }
+        };
+        timeline.push(report_score)
         // 5. Debrief Trial (Showing the tracked time)
         const debrief = {
           type: jsPsychHtmlButtonResponse,
