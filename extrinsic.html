@@ -71,36 +71,75 @@
         // 4. The Game Trial
         const game_trial = {
           type: jsPsychHtmlButtonResponse,
-          stimulus: `
-             <style>
-              #jspsych-html-button-response-btngroup {
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                width: auto;
-                z-index: 1000;
-              }
-            </style>
-            <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 20px;">
-              <p style="margin: 0 0 10px 0; color: #555;">
-                <em>Note: Click inside the game area first if your keyboard controls do not respond.</em>
-              </p>
+          stimulus: function() {
+            
+            // --- 1. Initialize empty variable ---
+            let leaderboardHTML = ""; 
+
+            // --- 2. Check Condition & Fill HTML ---
+            // Only fill the variable if the group is 'extrinsic'
+            if (typeof condition !== 'undefined' && condition === "extrinsic") {
+              leaderboardHTML = `
+                <div style="width: 250px; border: 2px solid #ccc; border-radius: 8px; padding: 15px; background: #f9f9f9; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-left: 30px;">
+                  <h3 style="margin-top: 0; text-align: center; color: #d9534f;">🎯 Targets to Beat</h3>
+                  <p style="font-size: 14px; color: #555; text-align: center;">Keep an eye on your score inside the game. Try to beat these previous participants!</p>
+                  
+                  <!-- ========================================== -->
+                  <!--      YOU CAN SAFELY EDIT SCORES BELOW      -->
+                  <!-- ========================================== -->
+                  <ul style="list-style-type: none; padding: 0; margin: 0; font-family: monospace; font-size: 16px;">
+                    <li style="padding: 5px 0; border-bottom: 1px solid #ddd;">1. Player_89 &nbsp;&nbsp; - <strong>36,423</strong></li>
+                    <li style="padding: 5px 0; border-bottom: 1px solid #ddd;">2. JumpMaster &nbsp; - <strong>12,221</strong></li>
+                    <li style="padding: 5px 0; border-bottom: 1px solid #ddd;">3. Subject_104 &nbsp;- <strong>9,800</strong></li>
+                    <li style="padding: 5px 0; border-bottom: 1px solid #ddd;">4. Subject_042 &nbsp;- <strong>7,500</strong></li>
+                    <li style="padding: 5px 0; border-bottom: 1px solid #ddd;">5. Guest_12 &nbsp;&nbsp;&nbsp;&nbsp;- <strong>4,300</strong></li>
+                  </ul>
+                  <!-- ========================================== -->
+
+                  <p style="margin-top: 15px; font-weight: bold; color: #333; text-align:center;">Remember your highest score to enter it on the next page!</p>
+                </div>
+              `;
+            }
+
+            // --- 3. Return Combined HTML ---
+            return `
+              <style>
+                #jspsych-html-button-response-btngroup {
+                  position: fixed;
+                  top: 20px;
+                  right: 20px;
+                  width: auto;
+                  z-index: 1000;
+                }
+              </style>
               
-              <!-- If the live GitHub Pages link returns a 404 or a blank box, change the src below to your downloaded local path (e.g., "./doodle-jump-main/index.html") -->
-              <iframe 
-                src="https://takosenpai2687.github.io/doodle-jump/" 
-                id="doodle-iframe"
-                title="Doodle Jump Game"
-                style="width: 400px; height: 600px; border: 2px solid #ccc; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-              </iframe>
-            </div>
-          `,
+              <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 20px;">
+                <p style="margin: 0 0 10px 0; color: #555;">
+                  <em>Note: Click inside the game area first if your keyboard controls do not respond.</em>
+                </p>
+                
+                <!-- Flex Container for Side-by-Side Layout -->
+                <div style="display: flex; justify-content: center; align-items: flex-start;">
+                  
+                  <iframe 
+                    src="https://takosenpai2687.github.io/doodle-jump/" 
+                    id="doodle-iframe"
+                    title="Doodle Jump Game"
+                    style="width: 400px; height: 600px; border: 2px solid #ccc; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                  </iframe>
+
+                  <!-- Insert the variable here (it will be empty if intrinsic) -->
+                  ${leaderboardHTML}
+                  
+                </div>
+              </div>
+            `;
+          },
           choices: ['Finish Experiment'],
           data: {
             task: 'doodle_jump_play'
           },
           on_load: function() {
-            // Attempt to auto-focus the iframe so keyboard events work immediately 
             const iframe = document.getElementById('doodle-iframe');
             if (iframe) iframe.focus();
           }
