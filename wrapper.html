@@ -11,6 +11,7 @@
     <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1"></script>
     <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@2.0.0"></script>
     <script src="https://unpkg.com/@jspsych/plugin-fullscreen@1.1"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-survey-text@2.1.0"></script>
     <script src="https://unpkg.com/@jspsych-contrib/plugin-pipe"></script>
   </head>
 
@@ -58,7 +59,7 @@
           type: jsPsychHtmlKeyboardResponse,
           stimulus: `
           <h1>Welcome to the Doodle Jump study!</h1>
-          <p>Press any key to begin.</p>
+          <p>Press any key to begin</p>
           `,
         };
         timeline.push(welcome);
@@ -96,6 +97,60 @@
           choices: ['Begin']
         };
         timeline.push(instructions);
+
+        /* ---------------------------------------------------------
+            Condition‑specific Email Trial
+        --------------------------------------------------------- */
+        let email_entry;
+
+        if (condition === "intrinsic") {
+          email_entry = {
+            type: jsPsychSurveyText,
+            questions: [
+              {
+                prompt: `
+                  <p>One participant will be randomly selected to receive a reward.</p>
+                  <p>Selection is completely random.</p>
+                  <p>***Your score and game performance will <strong>NOT</strong> affect your chances of receiving the reward***</p>
+                  <br>
+                  <p>Please enter the <strong>SAME</strong> email address you provided in the pre-screening survey so we can contact you regarding rewards:</p>
+                `,
+                name: "email",
+                required: true
+              }
+            ],
+            data: { task: "email_entry", reward_type: "intrinsic" },
+            on_finish: function(data){
+              const email = data.response.email;
+              jsPsych.data.addProperties({ email: email });
+            }
+          };
+        }
+
+        if (condition === "extrinsic") {
+          email_entry = {
+            type: jsPsychSurveyText,
+            questions: [
+              {
+                prompt: `
+                  <p>The participant who achieves the <strong>highest score</strong> will receive a reward.</p>
+                  <p>The better your performance, the higher your chances of winning!</p>
+                  <br>
+                  <p>Please enter the <strong>same</strong> email address you provided in the pre-screening survey so we can contact you regarding rewards:</p>
+                `,
+                name: "email",
+                required: true
+              }
+            ],
+            data: { task: "email_entry", reward_type: "extrinsic" },
+            on_finish: function(data){
+              const email = data.response.email;
+              jsPsych.data.addProperties({ email: email });
+            }
+          };
+        }
+        timeline.push(email_entry);
+
 
         /* ---------------------------------------------------------
            Game Trial (iframe)
