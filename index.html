@@ -168,8 +168,8 @@
               }
             </style>
 
-            <div style="display:flex; flex-direction:column; align-items:center; margin-bottom: 20px;">
-              <p style="margin: 0 0 10px 0; color:#555;">
+            <div id="game-container" style="display:flex; flex-direction:column; align-items:center; margin-bottom: 20px; position: relative;">
+              <p style="margin: 10px 0 10px 0; color:#555;">
                 <em>Note: Click inside the game area first if your keyboard controls do not respond.</em>
               </p>
 
@@ -184,10 +184,64 @@
           choices: ['Exit'],
           data: { task: "game_play" },
           on_load: function() {
-            const iframe = document.getElementById("game-iframe");
-            if (iframe) iframe.focus();
+
+          // Focus iframe for keyboard controls
+          const iframe = document.getElementById("game-iframe");
+          if (iframe) iframe.focus();
+
+          // Only show motivational popups in extrinsic condition
+          if (condition === "extrinsic") {
+            const messages = [
+              "Keep going! You're competing for the top score!🔥🔥🔥",
+              "Every point increases your chance of winning 🥇🥇",
+              "💪💪💪💪 Push harder!!! highest score wins!",
+              "💥 Every jump counts! Don't stop now!",
+              "Go for it! Beat your personal best 🚀🚀",
+              "Almost there! Show everyone who's best 🏆",
+              "🏁 Race to the highest score! 🏁 ",
+              "Lock IN! Every move matters in this challenge!!! 🌟",
+              "💣 Don't let anyone else take your crown! 👑",
+
+            ];
+
+            // Start interval
+            window.motivationInterval = setInterval(() => {
+
+              const msg = messages[Math.floor(Math.random() * messages.length)];
+
+              const popup = document.createElement("div");
+              popup.innerText = msg;
+              popup.style.position = "absolute";
+              popup.style.top = "0";
+              popup.style.left = "50%";
+              popup.style.transform = "translateX(-50%)";
+              popup.style.background = "rgba(0,0,0,0.85)";
+              popup.style.color = "white";
+              popup.style.padding = "10px 20px";
+              popup.style.borderRadius = "8px";
+              popup.style.fontSize = "16px";
+              popup.style.textAlign = "center";
+              popup.style.opacity = "1";
+              popup.style.transition = "opacity 0.5s";
+              popup.style.zIndex = "9999";
+
+              iframe.parentNode.appendChild(popup);
+
+              setTimeout(() => {
+                popup.style.opacity = "0";          // fade out smoothly
+                setTimeout(() => popup.remove(), 500);  // appear, stays visible for 2 sec, fades out over 0.5 sec, disappear
+              }, 2000);
+            }, 15000);
           }
-        };
+          },
+      
+        on_finish: function() {
+          // Stop popups when the trial ends
+          if (window.motivationInterval) {
+            clearInterval(window.motivationInterval);
+          }
+        }
+      };
         timeline.push(game_trial);
 
         /* ---------------------------------------------------------
@@ -200,7 +254,7 @@
               <h1>Thank you for participating!</h1>
               <p><img src="slideout.gif" width="250px"></p>
               <p>This experiment is interested in how extrinsic and intrinsic motivation can more or less modulate a person's consistency and performance on a task.</p>
-              <p>Press any key to exit the experiment.</p>
+              <p><i>Press any key to exit the experiment.</i></p>
             </div>
           `
         };
