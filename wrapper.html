@@ -9,6 +9,7 @@
 
     <!-- Plugins -->
     <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@2.0.0"></script>
     <script src="https://unpkg.com/@jspsych/plugin-fullscreen@1.1"></script>
     <script src="https://unpkg.com/@jspsych-contrib/plugin-pipe"></script>
   </head>
@@ -50,7 +51,19 @@
 
         const game_url = condition === "intrinsic"
           ? "intrinsic.html"
-          : "extrinsic.html";
+          : "test_extrinsic.html";
+
+        // Welcome to experiment
+        var welcome = {
+          type: jsPsychHtmlKeyboardResponse,
+          stimulus: `
+          <h1>Welcome to the Doodle Jump study!</h1>
+          <p>Press any key to begin.</p>
+          `,
+        };
+        timeline.push(welcome);
+
+        // 
 
         /* ---------------------------------------------------------
            Fullscreen
@@ -70,14 +83,17 @@
           type: jsPsychHtmlButtonResponse,
           stimulus: `
             <div style="max-width: 600px; margin: auto;">
-              <h2>Doodle Jump Experiment</h2>
-              <p>You will now play a clone of <strong>Doodle Jump</strong>.</p>
-              <p><strong>Controls:</strong> Use Left/Right arrow keys (or A/D) to move.</p>
-              <p>Play for as long as you like.</p>
-              <p>When you are completely finished, click the <strong>"Finish Experiment"</strong> button in the top right.</p>
+              <h1>Instructions</h1>
+              <p>In this study, you will play a Doodle Jump game.</p>
+              <p>Use the Left and Right Arrow keys (or A and D) to move.</p>
+              <p>You may play for <strong>as long as you wish</strong>. If the game ends, you may restart and continue playing.</p>
+              <p>Please complete this task in a quiet environment with minimal distractions. If possible, we recommend wearing headphones or earphones, as the game includes audio.</p>
+              <p>When you are completely finished playing, click the “<strong>Exit</strong>” button in the top-right corner of the screen.</p>
+              <p style="color: #555;"><i>Note: If the keyboard controls do not respond, please click inside the game area ONCE to activate it.</i></p>
+              <p> </p>
             </div>
           `,
-          choices: ['Start Game']
+          choices: ['Begin']
         };
         timeline.push(instructions);
 
@@ -110,7 +126,7 @@
               </iframe>
             </div>
           `,
-          choices: ['Finish Experiment'],
+          choices: ['Exit'],
           data: { task: "game_play" },
           on_load: function() {
             const iframe = document.getElementById("game-iframe");
@@ -123,14 +139,15 @@
            Debrief
         --------------------------------------------------------- */
         const debrief = {
-          type: jsPsychHtmlButtonResponse,
+          type: jsPsychHtmlKeyboardResponse,
           stimulus: `
             <div style="max-width:600px; margin:auto;">
-              <h2>Experiment Complete</h2>
-              <p>Thank you for participating!</p>
+              <h1>Thank you for participating!</h1>
+              <p><img src="goodbye.jpg"></p>
+              <p>This experiment is interested in how extrinsic and intrinsic motivation can more or less modulate a person's consistency and performance on a task.</p>
+              <p>Press any key to exit the experiment.</p>
             </div>
-          `,
-          choices: ['Continue']
+          `
         };
         timeline.push(debrief);
 
