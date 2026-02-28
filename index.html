@@ -245,6 +245,23 @@
         timeline.push(game_trial);
 
         /* ---------------------------------------------------------
+           Post-experimental Survey (WIP...)
+        --------------------------------------------------------- */
+        var last_survey = {
+          type: jsPsychSurveyText,
+          preamble: "<h2>Post-experimental Survey</h2><p>Please help us answer a few questions before leaving.</p>",
+          questions: [
+            {prompt: "2. What do you think we are trying to measure?", placeholder: "Type your answer here...", rows: 3, columns:70, required: true},
+            {prompt: "4. Was there any technical issue you ran into?", placeholder: "If yes, please put it down here... ", rows: 3, columns:70, required: true},
+          ],
+
+          data: {
+            // store questions in post-experimental survey that WE CARE IN DATA ANALYSIS
+          },
+        };
+        timeline.push(last_survey);
+
+        /* ---------------------------------------------------------
            Debrief
         --------------------------------------------------------- */
         const debrief = {
