@@ -11,7 +11,9 @@
     <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1"></script>
     <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@2.0.0"></script>
     <script src="https://unpkg.com/@jspsych/plugin-fullscreen@1.1"></script>
-    <script src="https://unpkg.com/@jspsych/plugin-survey-text@2.1.0"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-survey-text@1.0.0"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-survey-likert@1.0.0"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-survey-multi-choice@1.0.0"></script>
     <script src="https://unpkg.com/@jspsych-contrib/plugin-pipe"></script>
   </head>
 
@@ -52,7 +54,7 @@
 
         const game_url = condition === "intrinsic"
           ? "intrinsic.html"
-          : "test_extrinsic.html";
+          : "extrinsic.html";
 
         // Welcome to experiment
         var welcome = {
@@ -247,9 +249,25 @@
         /* ---------------------------------------------------------
            Post-experimental Survey (WIP...)
         --------------------------------------------------------- */
+        // start page for post survey
+        const start_last_survey = {
+          type: jsPsychHtmlKeyboardResponse,
+          stimulus: `
+            <div style="max-width:600px; margin:auto;">
+              <h1>Post-experimental Survey</h1>
+              <p>Please help us answer a few questions before leaving.</p>
+              <p><i>Press any key to continue.</i></p>
+            </div>
+          `
+        };
+        timeline.push(start_last_survey);
+        
+        //
+
+
         var last_survey = {
           type: jsPsychSurveyText,
-          preamble: "<h2>Post-experimental Survey</h2><p>Please help us answer a few questions before leaving.</p>",
+          preamble: "<h2></h2><p></p>",
           questions: [
             {prompt: "2. What do you think we are trying to measure?", placeholder: "Type your answer here...", rows: 3, columns:70, required: true},
             {prompt: "4. Was there any technical issue you ran into?", placeholder: "If yes, please put it down here... ", rows: 3, columns:70, required: true},
