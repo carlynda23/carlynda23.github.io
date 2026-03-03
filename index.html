@@ -419,6 +419,21 @@
         timeline.push(technical_issues);
 
         /* ---------------------------------------------------------
+           Save Data (jsPsychPipe)
+           DO NOT MODIFY experiment_id
+        --------------------------------------------------------- */
+        const filename = `${subject_id}.csv`;
+
+        const save_data = {
+          type: jsPsychPipe,
+          action: "save",
+          experiment_id: "EHb4oBeNaMQJ",
+          filename: filename,
+          data_string: () => jsPsych.data.get().csv()
+        };
+        timeline.push(save_data);
+
+        /* ---------------------------------------------------------
            Debrief
         --------------------------------------------------------- */
         const debrief = {
@@ -433,21 +448,6 @@
           `
         };
         timeline.push(debrief);
-
-        /* ---------------------------------------------------------
-           Save Data (jsPsychPipe)
-           DO NOT MODIFY experiment_id
-        --------------------------------------------------------- */
-        const filename = `${subject_id}.csv`;
-
-        const save_data = {
-          type: jsPsychPipe,
-          action: "save",
-          experiment_id: "EHb4oBeNaMQJ",
-          filename: filename,
-          data_string: () => jsPsych.data.get().csv()
-        };
-        timeline.push(save_data);
 
         /* ---------------------------------------------------------
            Exit Fullscreen
