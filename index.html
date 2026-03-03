@@ -121,6 +121,7 @@
                 required: true
               }
             ],
+            button_label: "Begin Game",
             data: { task: "email_entry", reward_type: "intrinsic" },
             on_finish: function(data){
               const email = data.response.email;
@@ -144,6 +145,7 @@
                 required: true
               }
             ],
+            button_label: "Begin Game",
             data: { task: "email_entry", reward_type: "extrinsic" },
             on_finish: function(data){
               const email = data.response.email;
@@ -247,37 +249,174 @@
         timeline.push(game_trial);
 
         /* ---------------------------------------------------------
-           Post-experimental Survey (WIP...)
+           Post-experimental Survey
         --------------------------------------------------------- */
-        // start page for post survey
+        // 0. start page for post survey
         const start_last_survey = {
           type: jsPsychHtmlKeyboardResponse,
           stimulus: `
             <div style="max-width:600px; margin:auto;">
               <h1>Post-experimental Survey</h1>
               <p>Please help us answer a few questions before leaving.</p>
-              <p><i>Press any key to continue.</i></p>
+              <p>Press any key to continue</p>
             </div>
           `
         };
         timeline.push(start_last_survey);
         
-        //
+        // post-experimental survey HERE
 
-
-        var last_survey = {
-          type: jsPsychSurveyText,
-          preamble: "<h2></h2><p></p>",
+        // 1. motivation scale rating 1-7
+        const motivation_survey = {
+          type: jsPsychSurveyLikert,
+          preamble: `
+          <br>
+          <h3>For the following questions, rate how true each statement was for you while playing the game.</h3>
+          <p>(0 = Strongly disagree, 3 = Neutral, 6 = Strongly agree)</p>`,
+          scale_width: 1000,
           questions: [
-            {prompt: "2. What do you think we are trying to measure?", placeholder: "Type your answer here...", rows: 3, columns:70, required: true},
-            {prompt: "4. Was there any technical issue you ran into?", placeholder: "If yes, please put it down here... ", rows: 3, columns:70, required: true},
-          ],
-
-          data: {
-            // store questions in post-experimental survey that WE CARE IN DATA ANALYSIS
-          },
+            {
+              prompt: "I found the game to be interesting.",
+              name: "interesting_rating?",
+              required: true,
+              labels: ["0 Strongly disagree","1","2","3 Neutral","4","5","6 Strongly agree"]
+            },
+            {
+              prompt: "I enjoyed playing the game.",
+              name: "enjoyment_rating?",
+              required: true,
+              labels: ["0 Strongly disagree","1","2","3 Neutral","4","5","6 Strongly agree"]
+            },
+            {
+              prompt: "The game was fun to play.",
+              name: "fun_rating?",
+              required: true,
+              labels: ["0 Strongly disagree","1","2","3 Neutral","4","5","6 Strongly agree"]
+            },
+            {
+              prompt: "I think I am pretty good at this game.",
+              name: "confidence_rating?",
+              required: true,
+              labels: ["0 Strongly disagree","1","2","3 Neutral","4","5","6 Strongly agree"]
+            },
+            {
+              prompt: "I put a lot of effort into the game.",
+              name: "effort_rating?",
+              required: true,
+              labels: ["0 Strongly disagree","1","2","3 Neutral","4","5","6 Strongly agree"]
+            },
+            {
+              prompt: "I tried hard to do well at the game.",
+              name: "tried_hard_rating?",
+              required: true,
+              labels: ["0 Strongly disagree","1","2","3 Neutral","4","5","6 Strongly agree"]
+            },
+            {
+              prompt: "While playing, I was focused on enjoying the game.",
+              name: "focus_enjoy_rating?",
+              required: true,
+              labels: ["0 Strongly disagree","1","2","3 Neutral","4","5","6 Strongly agree"]
+            },
+            {
+              prompt: "While playing, I was focused on improving my score.",
+              name: "focus_score_rating?",
+              required: true,
+              labels: ["0 Strongly disagree","1","2","3 Neutral","4","5","6 Strongly agree"]
+            },
+            {
+              prompt: "While playing, I was focused on beating others.",
+              name: "focus_compete_rating?",
+              required: true,
+              labels: ["0 Strongly disagree","1","2","3 Neutral","4","5","6 Strongly agree"]
+            }
+          ]
         };
-        timeline.push(last_survey);
+        timeline.push(motivation_survey);
+
+        // 2. Mindset scale rating 1-7
+        const mindset_survey = {
+        type: jsPsychSurveyLikert,
+        preamble: `<h3>For the following questions, rate how true they are for you in general.</h3>
+                  <p>(0 = Strongly disagree, 3 = Neutral, 6 = Strongly agree)</p>`,
+        scale_width: 1000,
+        questions: [
+          {prompt: "I am a person that perseveres.",
+          name: "perseverance_rating?",
+          required: true,
+          labels: ["0 Strongly disagree","1","2","3 Neutral","4","5","6 Strongly agree"]},
+          {prompt: "I finish whatever I begin.",
+          name: "responsibility_rating?",
+          required: true,
+          labels: ["0 Strongly disagree","1","2","3 Neutral","4","5","6 Strongly agree"]},
+          {prompt: "Setbacks or failures don't discourage me. I don't give up.",
+          name: "dont_give_up_rating?",
+          required: true,
+          labels: ["0 Strongly disagree","1","2","3 Neutral","4","5","6 Strongly agree"]}
+        ],
+      };
+      timeline.push(mindset_survey);
+
+        // 3. Reason for stopping (mcq)
+        const stop_reason = {
+          type: jsPsychSurveyMultiChoice,
+          questions: [
+            {
+              prompt: "What was your main reason for exiting the game?",
+              name: "why_stopped?",
+              options: [
+                "I got bored",
+                "I got frustrated",
+                "I felt satisfied with my performance",
+                "I reached the goal I set for myself",
+                "I got tired",
+                "Other"
+              ],
+              required: true
+            }
+          ]
+        };
+        timeline.push(stop_reason);
+
+        // 4. Open‑ended: Why did you stop?
+        const stop_reason_text = {
+          type: jsPsychSurveyText,
+          questions: [
+            {
+              prompt: "Please briefly describe why you stopped playing:",
+              name: "stop_reason?",
+              required: true
+            }
+          ]
+        };
+        timeline.push(stop_reason_text);
+        
+
+
+        // 5. Open‑ended: What do you think we are measuring?
+        const purpose_question = {
+          type: jsPsychSurveyText,
+          questions: [
+            {
+              prompt: "What do you think we are trying to measure in this study?",
+              name: "guess_our_dv?",
+              required: true
+            }
+          ]
+        };
+        timeline.push(purpose_question);
+
+        // 6. Open‑ended: Technical issues
+        const technical_issues = {
+          type: jsPsychSurveyText,
+          questions: [
+            {
+              prompt: "Did you encounter any technical issues?",
+              name: "technical_issues?",
+              required: true
+            }
+          ]
+        };
+        timeline.push(technical_issues);
 
         /* ---------------------------------------------------------
            Debrief
@@ -288,8 +427,8 @@
             <div style="max-width:600px; margin:auto;">
               <h1>Thank you for participating!</h1>
               <p><img src="slideout.gif" width="250px"></p>
-              <p>This experiment is interested in how extrinsic and intrinsic motivation can more or less modulate a person's consistency and performance on a task.</p>
-              <p><i>Press any key to exit the experiment.</i></p>
+              <p><i>This experiment is interested in how extrinsic and intrinsic motivation can more or less modulate a person's consistency and performance on a task.</i></p>
+              <p>Press any key to exit the experiment</p>
             </div>
           `
         };
