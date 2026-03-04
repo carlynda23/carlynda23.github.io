@@ -42,7 +42,7 @@
         const subject_id = jsPsych.randomization.randomID(10);
         // each participant has 50% chance in either extrinsic or intrinsic condition, NOT globally counterbalanced
         const condition = jsPsych.randomization.sampleWithoutReplacement(
-          ["intrinsic", "extrinsic"], 1
+          ["extrinsic", "intrinsic"], 1
         )[0];
 
         console.log(condition)
@@ -52,9 +52,9 @@
           condition: condition
         });
 
-        const game_url = condition === "intrinsic"
-          ? "intrinsic.html"
-          : "extrinsic.html";
+        const game_url = condition === "extrinsic"
+          ? "extrinsic.html"
+          : "intrinsic.html";
 
         // Welcome to experiment
         var welcome = {
